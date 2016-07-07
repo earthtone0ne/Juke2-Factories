@@ -2,7 +2,8 @@ juke.factory('AlbumFactory', function ($http) {
     return {
         fetchAll: function () {
           return $http.get('/api/albums/')
-          .then(function (res) { return res.data; });
+          .then(function (res) { return res.data; })
+          .catch(console.error.bind(console));
         },
 
         fetchById: function (albums) {
@@ -15,7 +16,8 @@ juke.factory('AlbumFactory', function ($http) {
                   song.albumIndex = i;
                 });
                 return album;
-            });
+            })
+            .catch(console.error.bind(console));
 
 
         }

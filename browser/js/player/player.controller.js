@@ -1,6 +1,6 @@
 'use strict';
 
-juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
+juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory, AlbumFactory) {
 
   // initialize audio player (note this kind of DOM stuff is odd for Angular)
 

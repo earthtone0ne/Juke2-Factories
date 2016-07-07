@@ -1,6 +1,6 @@
 'use strict';
 
-juke.factory('PlayerFactory', function(){
+juke.factory('PlayerFactory', function ($http) {
     var playerObj= {
         audio: document.createElement('audio'),
         playing: false,
@@ -10,7 +10,7 @@ juke.factory('PlayerFactory', function(){
                 this.next();
             });
         },
-        play: function(event, song){
+        play: function (event, song){
             // stop existing audio (e.g. other song) in any case
             this.pause();
             this.playing = true;
@@ -21,29 +21,41 @@ juke.factory('PlayerFactory', function(){
             this.audio.src = song.audioUrl;
             this.audio.load();
             this.audio.play();
-            console.log(song);
         },
-        pause: function(){
+        pause: function () {
             this.audio.pause();
             this.playing = false;
         },
-        resume: function(){},
-        isPlaying: function(){},
-        getCurrentSong: function(){},
-        next: function(){},
-        prev: function(){},
-        getProgress: function(){}
+        resume: function () {},
+        isPlaying: function () {},
+        getCurrentSong: function () {},
+        next: function () {
+          skip(1);
+        },
+        prev: function () {
+          skip(-1);
+        },
+        getProgress: function (){}
     };
-    function mod (num, m) { return ((num % m) + m) % m; }
-
-  // jump `interval` spots in album (negative to go back, default +1)
-    // function skip (interval) {
-    //     if (!playerObj.currentSong) return;
-    //     var index = playerObj.currentSong.albumIndex;
-    //     index = mod( (index + (interval || 1)), playerObj.currentSong.album.songs.length );
-    //     playerObj.currentSong = $scope.album.songs[index];
-    //     if ($scope.playing) $rootScope.$broadcast('play', $scope.currentSong);
-    // }
-  return playerObj;
+    // a "true" modulo that wraps negative to the top of the range
+    function mod (num, m) {
+      return ((num % m) + m) % m;
+    }
+    // jump `interval` spots in album (negative to go back, default +1)
+    function skip (interval) {
+        if (!playerObj.currentSong) return;
+        return $http.get('/api/albums/' + playerObj.currentSong.albumId)
+        .then(function (currentAlbum) {
+          var index = playerObj.currentSong.albumIndex;
+          index = mod((index + (interval || 1)), currentAlbum.songs.length );
+          playerObj.currentSong = currentAlbum.songs[index];
+          if (playerObj.playing) {
+            playerObj.play('play', playerObj.currentSong);
+          }
+          // $rootScope.$broadcast('play', $scope.currentSong);
+        })
+        .catch(console.error.bind(console));
+    }
+    return playerObj;
 
 });

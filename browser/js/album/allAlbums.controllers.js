@@ -6,7 +6,7 @@ juke.controller('AllAlbumsCtrl', function ($scope, $http, $rootScope, $log, Albu
     })
     .then(function (album) {
       $scope.songs = album.songs;
-      $scope.imageUrl =album.imageUrl;
+      $scope.imageUrl = album.imageUrl;
     })
     .catch($log.error); // $log service can be turned on and off; also, pre-bound
 });
