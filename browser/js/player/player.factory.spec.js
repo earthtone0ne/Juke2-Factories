@@ -58,7 +58,7 @@ describe('`PlayerFactory` factory', function () {
 
   });
 
-  xdescribe('#pause', function () {
+  describe('#pause', function () {
 
     it("calls audio's `pause`", function () {
       chai.spy.on(HTMLAudioElement.prototype, 'pause');
