@@ -1,55 +1,57 @@
 'use strict';
+//refactor to remove 'this.' properties and set as variables
+//only the functions here need to access that data
+//so data doesn't need to be in exported object
 
-juke.factory('PlayerFactory', function ($http) {
+juke.factory('PlayerFactory', function ($http, $rootScope) {
+    var audio = document.createElement('audio');
     var playerObj= {
-        audio: document.createElement('audio'),
+        progress: 0,
         playing: false,
         currentSong: null,
         currSongList: [],
         start: function (song, songList){
-            this.audio.addEventListener('ended', function () {
-                this.next();
-            });
+            // audio.addEventListener('ended', function () {
+            //     this.next();
+            // });
             this.pause();
             this.playing = true;
             if (songList) {
               this.currSongList = songList;
             }
             // resume current song
-            if (song === this.currentSong) return this.audio.play();
+            if (song === this.currentSong) return audio.play();
             // enable loading new song
             this.currentSong = song;
-            this.audio.src = song.audioUrl;
-            this.audio.load();
-            this.audio.play();
+            audio.src = song.audioUrl;
+            audio.load();
+            audio.play();
 
         },
-        // play: function (event, song){
-        //     // stop existing audio (e.g. other song) in any case
-        //     this.pause();
-        //     this.playing = true;
-        //     // resume current song
-        //     if (song === this.currentSong) return this.audio.play();
-        //     // enable loading new song
-        //     this.currentSong = song;
-        //     this.audio.src = song.audioUrl;
-        //     this.audio.load();
-        //     this.audio.play();
-        // },
+
         pause: function () {
-            this.audio.pause();
+            audio.pause();
             this.playing = false;
         },
-        resume: function () {},
-        isPlaying: function () {},
-        getCurrentSong: function () {},
+        resume: function () {
+            audio.play();
+            this.playing = true;
+        },
+        isPlaying: function () {
+            return this.playing;
+        },
+        getCurrentSong: function () {
+            return this.currentSong;
+        },
         next: function () {
           skip(1);
         },
         previous: function () {
           skip(-1);
         },
-        getProgress: function (){}
+        getProgress: function (){
+            return playerObj.progress ;
+        }
     };
     // a "true" modulo that wraps negative to the top of the range
     function mod (num, m) {
@@ -75,6 +77,28 @@ juke.factory('PlayerFactory', function ($http) {
         // })
         // .catch(console.error.bind(console));
     }
+    audio.addEventListener('ended', function () {
+        playerObj.next();
+        $rootScope.$evalAsync();
+    });
+
+    audio.addEventListener('timeupdate', function () {
+        playerObj.progress = audio.currentTime / audio.duration;
+        $rootScope.$evalAsync();
+    });
     return playerObj;
 
 });
+
+// play: function (event, song){
+        //     // stop existing audio (e.g. other song) in any case
+        //     this.pause();
+        //     this.playing = true;
+        //     // resume current song
+        //     if (song === this.currentSong) return audio.play();
+        //     // enable loading new song
+        //     this.currentSong = song;
+        //     audio.src = song.audioUrl;
+        //     audio.load();
+        //     audio.play();
+        // },

@@ -68,7 +68,7 @@ describe('`PlayerFactory` factory', function () {
 
   });
 
-  xdescribe('#resume', function () {
+  describe('#resume', function () {
 
     it("calls audio's `play`", function () {
       chai.spy.on(HTMLAudioElement.prototype, 'play');
@@ -78,7 +78,7 @@ describe('`PlayerFactory` factory', function () {
 
   });
 
-  xdescribe('#isPlaying', function () {
+  describe('#isPlaying', function () {
 
     it('returns false when song is not playing', function () {
       expect(PlayerFactory.isPlaying()).to.equal(false);
@@ -100,7 +100,7 @@ describe('`PlayerFactory` factory', function () {
 
   });
 
-  xdescribe('#getCurrentSong', function () {
+  describe('#getCurrentSong', function () {
 
     it('defaults to null', function () {
       expect(PlayerFactory.getCurrentSong()).to.equal(null);
@@ -170,14 +170,14 @@ describe('`PlayerFactory` factory', function () {
   });
 
 
-  xdescribe('#getProgress', function () {
+  describe('#getProgress', function () {
 
     it('is 0 before playing song', function () {
       expect(PlayerFactory.getProgress()).to.equal(0);
     });
 
     it('is a decimal between 0 and 1 corresponding to audio play progress', function (done) {
-      this.timeout(5000);
+      this.timeout(10000);
       audioMock.addEventListener('playing', function () {
         setTimeout(function () {
           expect(PlayerFactory.getProgress()).to.be.closeTo(1/SONG1_DURATION_SECS, 0.01);
@@ -185,10 +185,11 @@ describe('`PlayerFactory` factory', function () {
         }, 1000);
       });
       PlayerFactory.start(song1);
+
     });
 
     it('stays stable when paused', function (done) {
-      this.timeout(1000);
+      this.timeout(5000);
       audioMock.addEventListener('playing', function () {
         setTimeout(PlayerFactory.pause, 100);
       });
