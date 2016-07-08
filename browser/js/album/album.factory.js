@@ -1,11 +1,12 @@
 juke.factory('AlbumFactory', function ($http) {
     return {
+        // returns all albums
         fetchAll: function () {
           return $http.get('/api/albums/')
           .then(function (res) { return res.data; })
           .catch(console.error.bind(console));
         },
-
+        // returns one album
         fetchById: function (albums) {
              return $http.get('/api/albums/' + albums[0].id)
              .then(function (res) { return res.data; })
