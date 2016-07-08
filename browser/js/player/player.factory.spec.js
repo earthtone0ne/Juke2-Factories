@@ -119,7 +119,7 @@ describe('`PlayerFactory` factory', function () {
 
   });
 
-  xdescribe('#next', function () {
+  describe('#next', function () {
 
     var songList;
 
@@ -144,7 +144,7 @@ describe('`PlayerFactory` factory', function () {
 
   });
 
-  xdescribe('#previous', function () {
+  describe('#previous', function () {
 
     var songList;
 

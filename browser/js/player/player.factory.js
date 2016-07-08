@@ -5,10 +5,22 @@ juke.factory('PlayerFactory', function ($http) {
         audio: document.createElement('audio'),
         playing: false,
         currentSong: null,
-        start: function(){
+        currSongList: null,
+        start: function(song, songList){
             this.audio.addEventListener('ended', function () {
                 this.next();
             });
+            this.pause();
+            this.playing = true;
+            // resume current song
+            if (song === this.currentSong) return this.audio.play();
+            // enable loading new song
+            this.currentSong = song;
+            this.currSongList = songList;
+            this.audio.src = song.audioUrl;
+            this.audio.load();
+            this.audio.play();
+
         },
         play: function (event, song){
             // stop existing audio (e.g. other song) in any case
@@ -43,18 +55,18 @@ juke.factory('PlayerFactory', function ($http) {
     }
     // jump `interval` spots in album (negative to go back, default +1)
     function skip (interval) {
-        if (!playerObj.currentSong) return;
-        return $http.get('/api/albums/' + playerObj.currentSong.albumId)
-        .then(function (currentAlbum) {
-          var index = playerObj.currentSong.albumIndex;
-          index = mod((index + (interval || 1)), currentAlbum.songs.length );
-          playerObj.currentSong = currentAlbum.songs[index];
-          if (playerObj.playing) {
-            playerObj.play('play', playerObj.currentSong);
-          }
+        // if (!playerObj.currentSong) return;
+        // return $http.get('/api/albums/' + playerObj.currentSong.albumId)
+        // .then(function (currentAlbum) {
+        var index = playerObj.currentSong.albumIndex;
+        index = mod((index + (interval || 1)), playerObj.currSongList.length );
+        playerObj.currentSong = playerObj.currSongList;
+        if (playerObj.playing) {
+            playerObj.start(playerObj.currentSong,playerObj.currSongList);
+        }
           // $rootScope.$broadcast('play', $scope.currentSong);
-        })
-        .catch(console.error.bind(console));
+        // })
+        // .catch(console.error.bind(console));
     }
     return playerObj;
 
